@@ -1,44 +1,21 @@
 package main
 
 import (
-	"io/fs"
+	"context"
 	"log"
-	"path/filepath"
-	"time"
+	"os"
 
+	"supercollector/cmd"
 	"supercollector/internal/config"
 )
 
 func main() {
-	start := time.Now()
+	ctx := context.Background()
 	conf := config.Read()
-	log.Print(conf)
+	args := os.Args[1:]
 
-	root := conf.PathRoot
-	ch := make(chan string)
-
-	go goroutine1Print(ch)
-	go goroutine1Print(ch)
-	go goroutine1Print(ch)
-
-	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
-		if !info.IsDir() {
-			ch <- path
-		}
-
-		return nil
-	})
+	err := cmd.Run(ctx, conf, args)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	close(ch)
-
-	log.Print("DURATION = ", start.Sub(time.Now()))
-}
-
-func goroutine1Print(ch chan string) {
-	for path := range ch {
-		log.Print(path)
 	}
 }

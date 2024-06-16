@@ -54,9 +54,40 @@ func (s *RepoTestSuite) TearDownSuite() {
 	s.Require().NoError(err)
 }
 
-func (s *RepoTestSuite) TestGetMany() {
+func (s *RepoTestSuite) TestGetManyNameFilter() {
 	ctx := context.Background()
 	repo := user.Repo{Coll: s.coll}
+
+	name := "snow"
+	flt := user.Filter{Name: &name}
+	want := []user.User{
+		{
+			Name:  "John Snow",
+			Email: "snow@warrior.com",
+			Pass:  "wall123",
+		},
+		{
+			Name:  "john_snow",
+			Email: "john.snow@me.com",
+		},
+		{
+			Name:  "itssnowing",
+			Email: "ryan.gos@li.ng",
+			Pass:  "snow",
+		},
+	}
+
+	got, err := repo.GetMany(ctx, flt)
+	s.Require().NoError(err)
+	s.ElementsMatch(want, got)
+}
+
+func (s *RepoTestSuite) TestGetManyEmailFilter() {
+	ctx := context.Background()
+	repo := user.Repo{Coll: s.coll}
+
+	email := "snow"
+	flt := user.Filter{Email: &email}
 	want := []user.User{
 		{
 			Name:  "John Snow",
@@ -68,17 +99,6 @@ func (s *RepoTestSuite) TestGetMany() {
 			Email: "john.snow@me.com",
 		},
 	}
-
-	name := "snow"
-	flt := user.Filter{Name: &name}
-
-	err := repo.WriteMany(ctx, []user.User{
-		{
-			Name:  "ryan gosling",
-			Email: "ryan.go@li.ng",
-		},
-	})
-	s.Require().NoError(err)
 
 	got, err := repo.GetMany(ctx, flt)
 	s.Require().NoError(err)

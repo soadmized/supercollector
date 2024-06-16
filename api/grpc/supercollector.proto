@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package supercollector;
+
+option go_package = "./pb";
+
+import "google/api/annotations.proto";
+
+service Supercollector {
+  rpc User(UserRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      post: "/user"
+      body: "*"
+    };
+  }
+}
+
+message UserRequest {
+  string name = 1;
+  string email = 2;
+  string pass = 3;
+}
+
+message User {
+  string name = 1;
+  string email = 2;
+  string pass = 3;
+  string phone = 4;
+  string comment = 5;
+}
+
+message UserResponse {
+  User user = 1;
+}

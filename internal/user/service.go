@@ -1,6 +1,8 @@
 package user
 
-import "context"
+import (
+	"context"
+)
 
 type Repository interface {
 	GetMany(ctx context.Context, filter Filter) ([]User, error)

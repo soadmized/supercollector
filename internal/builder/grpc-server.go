@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 	"google.golang.org/grpc"
 
 	impl "supercollector/internal/grpc"

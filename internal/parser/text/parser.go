@@ -1,11 +1,20 @@
 package text
 
 import (
+	"bufio"
 	"context"
 	"io/fs"
+	"log"
+	"os"
 	"path/filepath"
+	"sync"
 
 	"supercollector/internal/user"
+)
+
+const (
+	chanBuffer   = 1000
+	workersCount = 10
 )
 
 type UserService interface {
@@ -15,42 +24,83 @@ type UserService interface {
 
 type Parser struct {
 	root        string
-	batchSize   int
 	UserService UserService
+	rows        chan string
+	filePaths   chan string
 }
 
-func New(root string, batchSize int) Parser {
+func New(root string) Parser {
 	return Parser{
 		root:      root,
-		batchSize: batchSize,
+		rows:      make(chan string, chanBuffer),
+		filePaths: make(chan string, chanBuffer),
 	}
 }
 
 func (p *Parser) Parse(ctx context.Context) error {
-	filesToRead := make([]string, 0)
-	walkFn := func(path string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(p.root, func(path string, info fs.FileInfo, err error) error {
 		if !info.IsDir() {
-			filesToRead = append(filesToRead, path)
+			p.filePaths <- path
 		}
 
 		return nil
-	}
-
-	err := filepath.Walk(p.root, walkFn)
+	})
 	if err != nil {
 		return err
 	}
 
-	// worker pool
+	close(p.filePaths)
+
+	wg := sync.WaitGroup{}
+	wg.Add(workersCount)
+
+	for w := 0; w < workersCount; w++ {
+		go func() {
+			defer wg.Done()
+
+			p.processFiles(ctx)
+		}()
+	}
+
+	wg.Wait()
+
+	close(p.rows)
 
 	return nil
 }
 
-// processBatch read the files batch and writes content to DB.
-func (p *Parser) processFile(ctx context.Context, pathToFile string) error {
-	// 1) open and read
-	// 2) string to user.User
-	// 3) write to user service
+func (p *Parser) Process(ctx context.Context) error {
+	for row := range p.rows {
+
+		// do something with rows
+		log.Print(row)
+	}
+
+	return nil
+}
+
+func (p *Parser) processFiles(ctx context.Context) {
+	for path := range p.filePaths {
+		if err := p.processFile(ctx, path); err != nil {
+			log.Print("reading file", err)
+		}
+	}
+}
+
+func (p *Parser) processFile(_ context.Context, path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		row := scanner.Text()
+		p.rows <- row
+	}
 
 	return nil
 }

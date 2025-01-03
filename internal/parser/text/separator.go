@@ -24,6 +24,8 @@ func validateDomain(rawStr string) bool {
 		"yandex.ru",
 		"rambler.ru",
 		"gmail.com",
+		"hotmail.com",
+		"outlook.com",
 	}
 
 	for _, dom := range domains {

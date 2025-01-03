@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"golang.org/x/sync/errgroup"
 
@@ -13,6 +14,11 @@ import (
 func runParser(ctx context.Context, conf config.Config) error {
 	// parses text files
 	parser := text.New(conf.PathRoot)
+	processor := func(row string) error {
+		log.Print(row)
+
+		return nil
+	}
 
 	eg := errgroup.Group{}
 
@@ -26,7 +32,7 @@ func runParser(ctx context.Context, conf config.Config) error {
 	})
 
 	eg.Go(func() error {
-		err := parser.Process(ctx)
+		err := parser.Process(ctx, processor)
 		if err != nil {
 			return fmt.Errorf("process rows at %s: %w", conf.PathRoot, err)
 		}

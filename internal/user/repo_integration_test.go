@@ -62,18 +62,18 @@ func (s *RepoTestSuite) TestGetManyNameFilter() {
 	flt := user.Filter{Name: &name}
 	want := []user.User{
 		{
-			Name:  "John Snow",
-			Email: "snow@warrior.com",
-			Pass:  "wall123",
+			Name:        "John Snow",
+			Credentials: "snow@warrior.com",
+			Pass:        "wall123",
 		},
 		{
-			Name:  "john_snow",
-			Email: "john.snow@me.com",
+			Name:        "john_snow",
+			Credentials: "john.snow@me.com",
 		},
 		{
-			Name:  "itssnowing",
-			Email: "ryan.gos@li.ng",
-			Pass:  "snow",
+			Name:        "itssnowing",
+			Credentials: "ryan.gos@li.ng",
+			Pass:        "snow",
 		},
 	}
 
@@ -90,13 +90,13 @@ func (s *RepoTestSuite) TestGetManyEmailFilter() {
 	flt := user.Filter{Email: &email}
 	want := []user.User{
 		{
-			Name:  "John Snow",
-			Email: "snow@warrior.com",
-			Pass:  "wall123",
+			Name:        "John Snow",
+			Credentials: "snow@warrior.com",
+			Pass:        "wall123",
 		},
 		{
-			Name:  "john_snow",
-			Email: "john.snow@me.com",
+			Name:        "john_snow",
+			Credentials: "john.snow@me.com",
 		},
 	}
 

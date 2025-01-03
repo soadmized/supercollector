@@ -1,20 +1,16 @@
 package user
 
 type User struct {
-	Name    string
-	Email   string
-	Pass    string
-	Phone   string
-	Comment string
+	Name        string
+	Credentials string
+	Comment     string
 }
 
 func userToDoc(u User) userDoc {
 	return userDoc{
-		Name:    u.Name,
-		Email:   u.Email,
-		Pass:    u.Pass,
-		Phone:   u.Phone,
-		Comment: u.Comment,
+		Name:        u.Name,
+		Credentials: u.Credentials,
+		Comment:     u.Comment,
 	}
 }
 

@@ -1,20 +1,16 @@
 package user
 
 type userDoc struct {
-	Name    string `bson:"name"`
-	Email   string `bson:"email"`
-	Pass    string `bson:"pass"`
-	Phone   string `bson:"phone"`
-	Comment string `bson:"comment"`
+	Name        string `bson:"name"`
+	Credentials string `bson:"credentials"`
+	Comment     string `bson:"comment"`
 }
 
 func docToUser(d userDoc) User {
 	return User{
-		Name:    d.Name,
-		Email:   d.Email,
-		Pass:    d.Pass,
-		Phone:   d.Phone,
-		Comment: d.Comment,
+		Name:        d.Name,
+		Credentials: d.Credentials,
+		Comment:     d.Comment,
 	}
 }
 

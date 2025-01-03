@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 
 	"supercollector/internal/user"
 )
@@ -69,12 +70,22 @@ func (p *Parser) Parse(ctx context.Context) error {
 	return nil
 }
 
-func (p *Parser) Process(ctx context.Context) error {
+func (p *Parser) Process(ctx context.Context, processor func(row string) error) error {
+	counter := atomic.Int64{}
+
 	for row := range p.rows {
 
-		// do something with rows
-		log.Print(row)
+		if validateDomain(row) {
+			// do something with rows
+			if err := processor(row); err != nil {
+				return err
+			}
+
+			counter.Add(1)
+		}
 	}
+
+	log.Print(counter.Load())
 
 	return nil
 }
